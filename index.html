@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TrustVault</title>
+<style>
+:root{--bg:#f5f7ff;--fg:#0f172a;--mut:#5b6784;--card:rgba(255,255,255,.78);--bd:rgba(15,23,42,.1);--ac:#4f46e5;--ac2:#06b6d4;--bad:#e11d48;--ok:#059669;--btn:#fff;--glow:rgba(79,70,229,.22);--sh:0 10px 30px rgba(30,41,99,.08);color-scheme:light dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#080d1c;--fg:#e8ecf7;--mut:#93a0bd;--card:rgba(255,255,255,.05);--bd:rgba(255,255,255,.12);--ac:#7c8cff;--ac2:#34e3d0;--bad:#fb7185;--ok:#4ade80;--btn:#06101c;--glow:rgba(124,140,255,.32);--sh:0 10px 30px rgba(0,0,0,.35)}}
+:root[data-theme="dark"]{--bg:#080d1c;--fg:#e8ecf7;--mut:#93a0bd;--card:rgba(255,255,255,.05);--bd:rgba(255,255,255,.12);--ac:#7c8cff;--ac2:#34e3d0;--bad:#fb7185;--ok:#4ade80;--btn:#06101c;--glow:rgba(124,140,255,.32);--sh:0 10px 30px rgba(0,0,0,.35)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:-20%;z-index:-1;pointer-events:none;filter:blur(24px);
+ background:radial-gradient(38% 38% at 18% 18%,var(--glow),transparent 70%),radial-gradient(34% 34% at 82% 28%,rgba(52,227,208,.20),transparent 70%),radial-gradient(40% 40% at 55% 92%,rgba(167,139,250,.22),transparent 70%);animation:drift 20s ease-in-out infinite alternate}
+@keyframes drift{from{transform:translate3d(-2%,-1%,0) scale(1)}to{transform:translate3d(3%,2%,0) scale(1.08)}}
+@keyframes up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes ring{0%{transform:scale(.7);opacity:.55}100%{transform:scale(1.7);opacity:0}}
+@keyframes shine{to{background-position:200% center}}
+main{max-width:1000px;margin:0 auto;padding:16px 16px 40px}
+h1{font-size:20px;margin:0}h2{font-size:17px;margin:20px 0 8px}
+header{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:14px;padding:10px 14px;border:1px solid var(--bd);border-radius:14px;background:var(--card);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:var(--sh);position:sticky;top:8px;z-index:5}
+.brand{display:flex;align-items:center;gap:10px}.logo{width:30px;height:30px;display:grid;place-items:center;border-radius:9px;background:linear-gradient(135deg,var(--ac),var(--ac2));color:var(--btn);font-size:16px;box-shadow:0 4px 14px var(--glow)}
+nav{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+button,select,input,textarea{font:inherit;color:inherit;background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:7px 12px;transition:border-color .2s,box-shadow .2s,transform .15s,background .2s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px var(--glow)}
+button{cursor:pointer}button:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 16px var(--glow);border-color:var(--ac)}button:active:not(:disabled){transform:translateY(0) scale(.98)}
+button.p,a.btn.p{background:linear-gradient(135deg,var(--ac),var(--ac2));color:var(--btn);border-color:transparent;font-weight:600}
+button.on{border-color:var(--ac);font-weight:600;background:linear-gradient(var(--card),var(--card)) padding-box,linear-gradient(135deg,var(--ac),var(--ac2)) border-box;border:1px solid transparent}
+button.d{color:var(--bad)}button:disabled{opacity:.6;cursor:wait}
+a.btn{display:inline-block;text-decoration:none;padding:10px 20px;border-radius:12px;border:1px solid var(--bd);color:inherit;transition:transform .15s,box-shadow .2s}a.btn:hover{transform:translateY(-2px);box-shadow:0 8px 22px var(--glow)}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:16px;margin-bottom:14px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:var(--sh);transition:transform .25s,box-shadow .25s,border-color .25s}
+.card:hover{border-color:color-mix(in srgb,var(--ac) 45%,var(--bd))}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:13px}th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--bd);white-space:nowrap}
+th{color:var(--mut);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em}tbody tr,tr{transition:background .2s}tr:hover td{background:color-mix(in srgb,var(--ac) 7%,transparent)}
+.b{padding:2px 9px;border-radius:99px;border:1px solid var(--bd);font-size:12px;background:color-mix(in srgb,var(--ac) 8%,transparent)}.allowed,.pass{color:var(--ok)}.denied,.rejected,.fail{color:var(--bad)}
+.m{color:var(--mut);font-size:13px}.msg{padding:10px 14px;border-radius:12px;border:1px solid var(--bd);margin-bottom:14px;background:var(--card);backdrop-filter:blur(10px);animation:up .4s both}
+pre{white-space:pre-wrap;word-break:break-word;background:color-mix(in srgb,var(--bg) 70%,transparent);border:1px solid var(--bd);border-radius:10px;padding:10px;max-height:240px;overflow:auto}
+textarea{width:100%;min-height:90px}
+.enter .card,.enter .hero,.enter .sec{animation:up .6s cubic-bezier(.2,.7,.2,1) both}
+.enter .card:nth-child(2),.enter .sec:nth-child(2){animation-delay:.07s}.enter .card:nth-child(3),.enter .sec:nth-child(3){animation-delay:.14s}.enter .card:nth-child(4){animation-delay:.21s}.enter .card:nth-child(5){animation-delay:.28s}.enter .card:nth-child(n+6){animation-delay:.34s}
+/* landing */
+.hero{display:grid;grid-template-columns:1.25fr .75fr;gap:20px;align-items:center;padding:34px 8px 26px}
+.pill{display:inline-block;padding:4px 12px;border:1px solid var(--bd);border-radius:99px;background:var(--card);font-size:12px;color:var(--mut);margin-bottom:14px}
+.big{font-size:clamp(30px,5.5vw,50px);line-height:1.08;font-weight:800;letter-spacing:-.02em;margin:0 0 14px}
+.grad{background:linear-gradient(90deg,var(--ac),var(--ac2),#a78bfa,var(--ac));background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 6s linear infinite}
+.lead{font-size:17px;color:var(--mut);max-width:520px;margin:0 0 20px}
+.shield{position:relative;display:grid;place-items:center;min-height:220px}
+.shield svg{width:150px;height:150px;animation:float 5s ease-in-out infinite;filter:drop-shadow(0 14px 28px var(--glow));position:relative;z-index:1}
+.shield i{position:absolute;width:150px;height:150px;border-radius:50%;border:2px solid var(--ac);animation:ring 3.2s ease-out infinite}.shield i:nth-child(2){animation-delay:1.1s}.shield i:nth-child(3){animation-delay:2.2s}
+.sec{margin:34px 0}.sec>h2{font-size:24px;text-align:center;margin:0 0 6px}.sec>p.m{text-align:center;margin:0 0 18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}.grid .card{margin:0}.grid .card:hover{transform:translateY(-5px)}
+.ico{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:22px;margin-bottom:10px;background:linear-gradient(135deg,color-mix(in srgb,var(--ac) 22%,transparent),color-mix(in srgb,var(--ac2) 22%,transparent))}
+.num{font-weight:800;font-size:13px;color:var(--ac);letter-spacing:.08em}
+.card h3{margin:2px 0 6px;font-size:16px}.card p{margin:0}
+details{border:1px solid var(--bd);border-radius:12px;background:var(--card);margin-bottom:10px;padding:2px 14px;transition:border-color .2s}details[open]{border-color:var(--ac)}
+summary{cursor:pointer;padding:12px 0;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:10px}summary::-webkit-details-marker{display:none}summary::after{content:"+";font-size:20px;line-height:1;transition:transform .3s;color:var(--ac)}details[open] summary::after{transform:rotate(45deg)}
+details p{margin:0 0 12px;color:var(--mut)}
+.rv{opacity:0;transform:translateY(22px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}.rv.in{opacity:1;transform:none}
+.foot{text-align:center;color:var(--mut);font-size:13px;margin-top:36px}
+@media(max-width:720px){.hero{grid-template-columns:1fr;padding-top:18px}.shield{min-height:170px;order:-1}}
+.pw{position:relative;display:flex;flex:1 1 180px;min-width:0}
+.pw input{width:100%;padding-right:40px}
+.pw .eye{position:absolute;right:4px;top:50%;transform:translateY(-50%);display:grid;place-items:center;width:32px;height:32px;padding:0;border:0;background:none;box-shadow:none;color:var(--mut,#8a93b2);cursor:pointer;border-radius:8px}
+.pw .eye,.pw .eye:hover:not(:disabled),.pw .eye:active:not(:disabled),.pw .eye:focus{transition:none;animation:none;transform:translateY(-50%);box-shadow:none;border-color:transparent;background:none;outline:none}
+.pw input,.pw input:focus{transform:none}
+.pw:not(.show) .e2,.pw.show .e1{display:none}
+.pick{position:relative;flex:1 1 260px;min-width:0}
+.pk-btn{width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:left}
+.pk-btn span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pk-panel{position:absolute;z-index:30;left:0;right:0;top:calc(100% + 4px);background:var(--bg);border:1px solid var(--bd);border-radius:12px;box-shadow:var(--sh);padding:8px}
+.pk-panel[hidden]{display:none}
+.pk-q{width:100%;box-sizing:border-box}
+.pk-list{max-height:220px;overflow:auto;margin-top:6px}
+.pk-i{display:flex;gap:8px;align-items:center;padding:6px 8px;border-radius:8px;cursor:pointer}
+.pk-i:hover{background:var(--glow)}
+.pk-i input{width:auto;padding:0;box-shadow:none;transform:none}
+.pk-i[hidden]{display:none}
+.pk-act{display:flex;gap:6px;margin-top:6px}
+.card:has(.pk-panel:not([hidden])){z-index:5}
+#app[data-tab="admin"] .tw{max-height:280px;overflow:auto;border:1px solid var(--bd);border-radius:10px}
+#app[data-tab="admin"] .tw table{margin:0}
+#app[data-tab="admin"] .tw th{position:sticky;top:0;z-index:1;background:var(--bg)}
+input.bad,input.bad:focus{border-color:var(--bad)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--bad) 28%,transparent)!important}
+/* extra motion */
+@property --a{syntax:"<angle>";initial-value:0deg;inherits:false}
+@keyframes spin{to{--a:360deg}}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes sweep{to{transform:translateX(130%)}}
+@keyframes pulse{0%,100%{box-shadow:0 4px 14px var(--glow)}50%{box-shadow:0 4px 26px var(--ac)}}
+.pill,.big,.lead{animation:up .8s cubic-bezier(.2,.7,.2,1) backwards}.pill{animation-delay:.05s}.big{animation-delay:.15s}.lead{animation-delay:.3s}
+.logo{animation:pulse 2.8s ease-in-out infinite}
+.shield{transform:translate(calc(var(--px,0)*16px),calc(var(--py,0)*12px));transition:transform .25s ease-out}
+.shield svg path:nth-of-type(2){stroke-dasharray:70;stroke-dashoffset:70;animation:draw .9s .7s cubic-bezier(.4,0,.2,1) forwards}
+#signin{border:2px solid transparent;background:linear-gradient(var(--bg),var(--bg)) padding-box,conic-gradient(from var(--a),var(--ac),var(--ac2),#a78bfa,var(--ac)) border-box;animation:spin 6s linear infinite}
+button.p,a.btn.p{position:relative;overflow:hidden}
+button.p::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.5) 50%,transparent 70%);transform:translateX(-130%);animation:sweep 3.2s ease-in-out infinite}
+input:focus,select:focus,textarea:focus{transform:translateY(-1px)}
+.card{position:relative}
+.card::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(220px circle at var(--x,50%) var(--y,50%),var(--glow),transparent 70%)}
+.card:hover::before{opacity:.7}
+.ico{animation:float 4s ease-in-out infinite}.grid .card:nth-child(2) .ico{animation-delay:.5s}.grid .card:nth-child(3) .ico{animation-delay:1s}.grid .card:nth-child(4) .ico{animation-delay:1.5s}
+.rv.in .grid .card{animation:up .6s cubic-bezier(.2,.7,.2,1) backwards}
+.rv.in .grid .card:nth-child(2){animation-delay:.1s}.rv.in .grid .card:nth-child(3){animation-delay:.2s}.rv.in .grid .card:nth-child(4){animation-delay:.3s}
+details{transition:border-color .2s,transform .2s}details:hover{transform:translateX(4px)}
+details[open] p{animation:up .35s ease backwards}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body><main><div id="app"></div></main>
+
+<script id="core">
+/* ---- Supabase settings: Dashboard > Project Settings > API ---- */
+const SUPABASE_URL='https://nhepcmdrndeiygxhjevp.supabase.co';            // e.g. https://abcdxyz.supabase.co
+const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5oZXBjbWRybmRlaXlneGhqZXZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM3NjkzNTMsImV4cCI6MjEwOTM0NTM1M30.TlXQ1GGJTSShId7hskAmAF8Sg2vLWhvVCjT3cYT8_NM';  // the public "anon" key (never the service_role key)
+
+const sb=(window.supabase&&!/YOUR_SUPABASE/.test(SUPABASE_URL+SUPABASE_ANON_KEY))?window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true}}):null;
+const BUCKET='vault';
+const enc=new TextEncoder();
+class Denied extends Error{}
+class Invalid extends Error{}
+const TYPES={txt:1,md:1,csv:1,json:1,pdf:1,png:1},TEXT=['txt','md','csv','json'],MAX=1048576,CATS=['Contract','HR','Finance','Engineering','Audit','Other'];
+const MIME={txt:'text/plain',md:'text/markdown',csv:'text/csv',json:'application/json',pdf:'application/pdf',png:'image/png'};
+const extOf=n=>n.includes('.')?n.split('.').pop().toLowerCase():'';
+
+/* The database is the only place rules live (see supabase-schema.sql). Everything below is a thin
+   client: it calls tv_* functions, which re-check account, role and grant on every call.
+   The checks in checkFile() only give quick feedback and test file content, which the database cannot read. */
+async function rpc(fn,args){
+ const{data,error}=await sb.rpc(fn,args||{});
+ if(error)throw new Error(error.message);
+ if(!data||!data.ok){const e=data||{};throw new(e.kind==='denied'?Denied:Invalid)(e.error||'Request failed')}
+ return data.data}
+
+function checkFile(name,bytes,cat){
+ if(typeof name!=='string'||!/^[\w\-. ()]{1,100}$/.test(name)||name.includes('..')||name.startsWith('.'))throw new Invalid('File name: 1-100 characters, letters, digits, space, dot, dash, underscore, brackets only');
+ const ext=extOf(name);if(!TYPES[ext])throw new Invalid('File type .'+ext+' is not allowed (txt, md, csv, json, pdf, png)');
+ if(!bytes.length)throw new Invalid('File is empty');if(bytes.length>MAX)throw new Invalid('File is larger than 1 MB');
+ if(!CATS.includes(cat))throw new Invalid('Unknown category');
+ const starts=a=>a.every((b,i)=>bytes[i]===b);
+ if(ext==='pdf'&&!starts([0x25,0x50,0x44,0x46,0x2d]))throw new Invalid('Content is not a real PDF');
+ if(ext==='png'&&!starts([0x89,0x50,0x4e,0x47]))throw new Invalid('Content is not a real PNG');
+ if(TEXT.includes(ext)){let t;try{t=new TextDecoder('utf-8',{fatal:true}).decode(bytes)}catch{throw new Invalid('Text file is not valid UTF-8')}
+  if(t.includes('\0'))throw new Invalid('Binary data inside a text file');if(ext==='json'){try{JSON.parse(t)}catch{throw new Invalid('Not valid JSON')}}}
+ return ext}
+
+const V={
+ users:{},
+ async refreshUsers(){const l=await rpc('tv_users');V.users=Object.fromEntries(l.map(u=>[u.id,u]))},
+ async login(email,pw){
+  const{error}=await sb.auth.signInWithPassword({email,password:pw});
+  if(error){const notConf=/confirm/i.test(error.message||'');const x=new Denied(notConf?'Your email is not confirmed yet. Open the confirmation email we sent you, then sign in.':'Email or password is incorrect. Check both and try again.');x.badFields=notConf?['u']:['u','p'];throw x}
+  try{return await rpc('tv_login')}catch(e){await sb.auth.signOut();throw e}},
+ async register(email,id,name,role,pw){
+  id=String(id||'').trim().toLowerCase();name=String(name||'').trim();email=String(email||'').trim();pw=String(pw||'');
+  if(!/^\S+@\S+\.\S+$/.test(email))throw new Invalid('Enter a valid email address');
+  if(!/^[a-z0-9_.-]{3,30}$/.test(id))throw new Invalid('Username: 3-30 characters, lowercase letters, digits, dot, dash or underscore');
+  if(name.length<2||name.length>60)throw new Invalid('Enter your full name (2-60 characters)');
+  if(!['owner','viewer'].includes(role))throw new Invalid('You can register as a document owner or a viewer; administrators are created by an administrator');
+  if(pw.length<8||!/[a-zA-Z]/.test(pw)||!/\d/.test(pw))throw new Invalid('Password: at least 8 characters, with a letter and a digit');
+  const free=await sb.rpc('tv_username_free',{p_username:id});
+  if(free.data===false)throw new Invalid('That username is already taken');
+  const{error}=await sb.auth.signUp({email,password:pw,options:{data:{username:id,name,role}}});
+  if(error)throw new Invalid(error.message);
+  await sb.auth.signOut().catch(()=>{})},
+ async fetchBytes(path){const{data,error}=await sb.storage.from(BUCKET).download(path);if(error)throw new Denied('The file could not be fetched: '+error.message);return new Uint8Array(await data.arrayBuffer())},
+ async stage(uid,ext,bytes){const path=uid+'/'+crypto.randomUUID();
+  const{error}=await sb.storage.from(BUCKET).upload(path,new Blob([bytes],{type:MIME[ext]}),{contentType:MIME[ext],upsert:false});
+  if(error)throw new Invalid('Upload failed: '+error.message);return path},
+ async unstage(path){try{await sb.storage.from(BUCKET).remove([path])}catch{}},
+ async purge(paths){try{await sb.storage.from(BUCKET).remove(paths);await rpc('tv_purged',{p_paths:paths})}catch{}},
+ list(f){f=f||{};return rpc('tv_list',{p_q:f.q||null,p_owner:f.owner||null,p_cat:f.category||null,p_from:f.from||null,p_to:f.to||null})},
+ async read(id){const r=await rpc('tv_read',{p_id:id});return{meta:r.meta,bytes:TEXT.includes(r.meta.ext)?await V.fetchBytes(r.path):null}},
+ async download(id){const r=await rpc('tv_download',{p_id:id});return{name:r.name,bytes:await V.fetchBytes(r.path)}},
+ detail(id){return rpc('tv_detail',{p_id:id})},
+ async upload(uid,name,bytes,cat,vis,editors){
+  const ext=checkFile(name,bytes,cat);const path=await V.stage(uid,ext,bytes);
+  try{return await rpc('tv_upload',{p_name:name,p_path:path,p_cat:cat,p_vis:vis,p_editors:editors})}
+  catch(e){await V.unstage(path);throw e}},
+ async edit(uid,id,ch){
+  let path=null;const ext=extOf(ch.name);
+  if(ch.text!==ch.oldText){const bytes=enc.encode(ch.text);checkFile(ch.name,bytes,ch.category);path=await V.stage(uid,ext,bytes)}
+  try{const r=await rpc('tv_edit',{p_id:id,p_name:ch.name,p_cat:ch.category,p_path:path});if(r&&r.old_path)await V.purge([r.old_path])}
+  catch(e){if(path)await V.unstage(path);throw e}},
+ async remove(id){const r=await rpc('tv_remove',{p_id:id});await V.purge([r.path])},
+ grant:(id,t,p)=>rpc('tv_grant',{p_id:id,p_target:t,p_perm:p}),
+ revoke:(id,t)=>rpc('tv_revoke',{p_id:id,p_target:t}),
+ setVisibility:(id,v)=>rpc('tv_set_visibility',{p_id:id,p_vis:v}),
+ adminView:()=>rpc('tv_admin_view'),
+ setActive:(t,on)=>rpc('tv_set_active',{p_target:t,p_on:on}),
+ setRole:(t,r)=>rpc('tv_set_role',{p_target:t,p_role:r}),
+ approve:t=>rpc('tv_approve',{p_target:t}),
+ reject:t=>rpc('tv_reject',{p_target:t}),
+ docApprove:id=>rpc('tv_doc_approve',{p_id:id}),
+ async docReject(id){const r=await rpc('tv_doc_reject',{p_id:id});await V.purge([r.path])},
+ verifyChain:()=>rpc('tv_verify')
+};
+</script>
+
+<script id="ui">
+let keep={},bad=new Set(),myEmail='',confirmAcct=false,lastTab=null,me=null,tab='docs',filt={},docs=[],sel=null,detail=null,msg=null,adm=null,chain=null,confirmDel=false,busy=false;
+const $=q=>document.querySelector(q),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=i=>i?new Date(i).toLocaleString():'—',nm=id=>V.users[id]?V.users[id].name:id,role=()=>V.users[me].role;
+const note=(m,ok,t)=>{msg={t:t||(ok?'OK':'Denied'),m,ok}};
+const ROLES=[['Administrator','Approves or rejects new registrations, switches people between viewer and document owner, manages accounts (activate or deactivate), sees the activity log, permission changes and a register of documents (names, owners, who has access) and can verify the audit chain. Can see, open, download and edit every document by default (each of these is written to the audit trail), and must approve or reject every new upload before it becomes available. Cannot upload or delete documents.'],
+['Document owner','Uploads documents (each upload waits for administrator approval before anyone else can see it), organises them (name, category), reads, edits and downloads their own documents, and is the only person who can delete a document they uploaded (no administrator, editor or other owner can), marks each upload Public (every owner can edit, every viewer can view) or Private (only the owners and viewers they pick), takes access back, and sees the audit trail of their own documents.'],
+['Viewer','Sees every public document, plus private documents shared with them. Can view and download, but never edit, delete, share or upload.']];
+const TABS={admin:['admin','docs','roles','profile'],owner:['docs','upload','roles','profile'],viewer:['docs','roles','profile']};
+const LBL={docs:'Documents',upload:'Upload',admin:'Administration',roles:'Roles',login:'Sign in',register:'Register',profile:'My profile'};
+
+async function act(fn){msg=null;busy=true;try{await fn()}catch(e){if(e instanceof Denied||e instanceof Invalid)msg={t:e.title||(e instanceof Denied?'Denied':'Rejected'),m:e.message};else msg={t:'Error',m:e.message}}
+ try{await load()}catch(e){if(!msg&&me)msg={t:'Error',m:e.message}}busy=false;render()}
+async function load(){if(!me)return;await V.refreshUsers();
+ if(tab==='docs')docs=await V.list(filt);
+ if(role()==='admin'&&tab==='admin')adm=await V.adminView();
+ if(sel)await refreshDetail()}
+async function refreshDetail(){try{const d=await V.detail(sel);detail.meta=d.meta;detail.editors=d.editors;detail.grants=d.grants;detail.audit=d.audit}catch(e){sel=null;detail=null}}
+async function openDoc(id){const r=await V.read(id);sel=id;detail={text:r.bytes?new TextDecoder().decode(r.bytes):null,meta:r.meta}}
+
+const opt=(arr,cur,all)=>(all?`<option value="">${all}</option>`:'')+arr.map(([v,l])=>`<option value="${esc(v)}"${v===cur?' selected':''}>${esc(l)}</option>`).join('');
+const cats=c=>opt(CATS.map(x=>[x,x]),c);
+const badge=o=>`<span class="b ${esc(o)}">${esc(o)}</span>`;
+
+function loginView(){return`<section class="hero"><div><span class="pill">🔒 Private by design · every action recorded</span>
+<h2 class="big">Your documents, <span class="grad">locked down</span> and fully accounted for.</h2>
+<p class="lead">Store, share and track sensitive files with role-based access, private storage and a tamper-evident audit trail.</p>
+</div>
+<div class="shield"><i></i><i></i><i></i><svg viewBox="0 0 120 120" fill="none"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7c8cff"/><stop offset="1" stop-color="#34e3d0"/></linearGradient></defs><path d="M60 8 100 24v32c0 26-17 46-40 56C37 102 20 82 20 56V24L60 8Z" fill="url(#g)" opacity=".95"/><path d="m42 60 13 13 25-27" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/></svg></div></section>
+${sb?'':'<div class="msg"><b class="fail">Not configured:</b> open this file and fill in <code>SUPABASE_URL</code> and <code>SUPABASE_ANON_KEY</code> at the top of the first script (see SUPABASE_SETUP.md).</div>'}
+<div class="card" id="signin"><h2 style="margin-top:0">Sign in to TrustVault</h2>${msgBox()}<form data-f="login" novalidate><div class="row">
+<input name="u" type="email" class="${bc('u').trim()}" value="${kv('u')}" placeholder="Email" autocomplete="email">${pwField('p','Password','current-password')}
+<button class="p">Sign in</button></div>
+<div class="m">New here? Register, confirm your email if asked, then wait for an administrator to approve your account.</div></form></div>
+<section class="sec rv"><h2>How it works</h2><p class="m">Three steps from sign-up to full visibility.</p><div class="grid">
+<div class="card"><div class="num">STEP 1</div><div class="ico">📝</div><h3>Register &amp; get approved</h3><p class="m">Create an account; an administrator approves it before anyone can sign in.</p></div>
+<div class="card"><div class="num">STEP 2</div><div class="ico">📤</div><h3>Upload &amp; choose who sees</h3><p class="m">Share with everyone, or only the people you pick, with view or edit access.</p></div>
+<div class="card"><div class="num">STEP 3</div><div class="ico">🧾</div><h3>Track every access</h3><p class="m">Opens, downloads, edits and refused attempts are all written to the log.</p></div></div></section>
+<section class="sec rv"><h2>Why TrustVault</h2><p class="m">Security rules live in the database, not in the browser.</p><div class="grid">
+<div class="card"><div class="ico">🛡️</div><h3>Role-based access</h3><p class="m">Administrator, document owner and viewer, each with clear limits.</p></div>
+<div class="card"><div class="ico">🗄️</div><h3>Private storage</h3><p class="m">Files sit in a private bucket and are released only to people with access.</p></div>
+<div class="card"><div class="ico">⛓️</div><h3>Tamper-evident log</h3><p class="m">A hash-chained audit trail shows if any entry was altered.</p></div>
+<div class="card"><div class="ico">⚡</div><h3>Instant control</h3><p class="m">Take access back and it takes effect immediately.</p></div></div></section>
+<section class="sec rv"><h2>Questions</h2><p class="m">Quick answers.</p>
+<details><summary>Can administrators read my documents?</summary><p>No. Administrators manage accounts and see a register and the activity log, but cannot open, download, edit or delete document contents unless an owner shares one with them.</p></details>
+<details><summary>Which file types are allowed?</summary><p>txt, md, csv, json, pdf and png, up to 1 MB each. Text files can be edited in the app.</p></details>
+<details><summary>What does “Verify audit chain” do?</summary><p>It recomputes every log entry’s fingerprint in the database and tells an administrator whether any entry has been changed.</p></details>
+<details><summary>Who can delete a document?</summary><p>Only the owner who uploaded it.</p></details></section>
+<section class="sec rv">${rolesView()}</section>
+<div class="foot rv">🔐 TrustVault · access you control, history you can verify</div>`}
+const EYE='<svg class="e1" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/><circle cx="12" cy="12" r="3"/></svg><svg class="e2" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.9 17.9A10.9 10.9 0 0 1 12 19C5 19 1 12 1 12a18.5 18.5 0 0 1 5.1-5.9M9.9 5.1A10.4 10.4 0 0 1 12 5c7 0 11 7 11 7a18.5 18.5 0 0 1-2.2 3.2M14.1 14.1a3 3 0 0 1-4.2-4.2M1 1l22 22"/></svg>';
+const msgBox=()=>msg?`<div class="msg" role="alert"><b class="${msg.ok?'pass':'fail'}">${esc(msg.t)}:</b> ${esc(msg.m)}</div>`:'';
+const bc=n=>bad.has(n)?' bad':'',kv=n=>esc(keep[n]||'');
+const pwField=(n,ph,ac)=>`<span class="pw"><input name="${n}" class="${bc(n).trim()}" value="${kv(n)}" type="password" placeholder="${ph}" autocomplete="${ac}"><button type="button" class="eye" aria-label="Show password" title="Show password">${EYE}</button></span>`;
+function registerView(){return`<div class="card"><h2 style="margin-top:0">Create an account</h2>${msgBox()}<form data-f="register" novalidate><div class="row"><input name="name" class="${bc('name').trim()}" value="${kv('name')}" placeholder="Full name"><input name="u" class="${bc('u').trim()}" value="${kv('u')}" placeholder="Username" autocomplete="username"></div>
+<div class="row"><input name="email" type="email" class="${bc('email').trim()}" value="${kv('email')}" placeholder="Email" autocomplete="email"></div>
+<div class="row"><select name="role"><option value="viewer">Viewer (sees documents shared with me)</option><option value="owner"${keep.role==='owner'?' selected':''}>Document owner (uploads and shares)</option></select></div>
+<div class="row">${pwField('p','Password','new-password')}${pwField('p2','Repeat password','new-password')}</div>
+<div class="row"><button class="p">Register</button><button type="button" data-a="tab" data-t="login">Back to sign in</button></div>
+<div class="m">Password: at least 8 characters with a letter and a digit. New accounts cannot sign in until an administrator approves them. Administrator accounts cannot be self-registered.</div></form></div>`}
+function rolesView(){return`<div class="card"><h2 style="margin-top:0">What each role can do</h2>${ROLES.map(r=>`<p><b>${r[0]}.</b> ${r[1]}</p>`).join('')}<p class="m">Every request re-checks account status, role and the document’s grant list in the database; nothing is remembered between requests. Refused attempts are logged too.</p></div>`}
+
+const picker=(name,users,ph)=>`<div class="pick" data-ph="${esc(ph)}"><button type="button" class="pk-btn" data-pk="toggle"><span class="pk-lbl">${esc(ph)}</span><span>▾</span></button><div class="pk-panel" hidden><input type="search" class="pk-q" placeholder="Search by name or username…" autocomplete="off"><div class="pk-list">${users.map(u=>`<label class="pk-i" data-n="${esc((u.name+' '+u.username).toLowerCase())}"><input type="checkbox" name="${name}" value="${u.id}" data-nm="${esc(u.name)}"> ${esc(u.name)} <span class="m">${esc(u.username)}</span></label>`).join('')||'<div class="m">No one to choose yet.</div>'}</div><div class="pk-empty m" hidden>No match.</div><div class="pk-act"><button type="button" data-pk="all">Select shown</button><button type="button" data-pk="none">Clear</button></div></div></div>`;
+const deleteCard=u=>`<div class="card"><h2 style="margin-top:0">Delete account</h2>${confirmAcct?`<form data-f="delacct" novalidate><div class="msg"><b class="fail">This cannot be undone.</b> ${u.role==='owner'?'Every document you uploaded will be permanently deleted for everyone, and you will lose access to documents shared with you. ':''}You will be signed out and will not be able to sign in with these details again.</div><div class="row">${pwField('dp','Enter your password to confirm','current-password')}</div><div class="row"><button class="d">Yes, delete my account</button><button type="button" data-a="delacctno">Cancel</button></div></form>`:`<div class="m">Permanently delete your account${u.role==='owner'?' and every document you uploaded':''}.</div><div class="row"><button class="d" data-a="delacct">Delete my account</button></div>`}</div>`;
+function profileView(){const u=V.users[me];
+ return`<div class="card"><h2 style="margin-top:0">My profile</h2>${msgBox()}<form data-f="prof" novalidate><div class="m">Full name and username (you can change both)</div><div class="row"><input name="pn" class="${bc('pn').trim()}" value="${esc(keep.pn!==undefined?keep.pn:u.name)}" placeholder="Full name" autocomplete="name"><input name="pu" class="${bc('pu').trim()}" value="${esc(keep.pu!==undefined?keep.pu:u.username)}" placeholder="Username" autocomplete="username"></div><div class="row"><button class="p">Save changes</button></div></form><div class="tw"><table><tr><th>Email</th><td>${esc(myEmail)}</td></tr><tr><th>Role</th><td>${esc(u.role)}</td></tr></table></div></div>
+<div class="card"><h2 style="margin-top:0">Change password</h2><form data-f="chpw" novalidate><div class="row">${pwField('cp','Current password','current-password')}</div><div class="row">${pwField('np','New password','new-password')}${pwField('np2','Repeat new password','new-password')}</div><div class="row"><button class="p">Change password</button></div><div class="m">At least 8 characters, with a letter and a digit.</div></form></div>
+${u.role!=='admin'?deleteCard(u):''}`}
+const stat=s=>s==='pending'?'<span class="b">Waiting for approval</span>':s==='rejected'?'<span class="b fail">Rejected</span>':'';
+function docsView(){const list=docs;
+ return`<div class="card"><form data-f="search"><div class="row"><input name="q" placeholder="Name contains…" value="${esc(filt.q)}">
+<select name="owner">${opt(Object.values(V.users).filter(u=>u.role==='owner'&&u.approved).map(u=>[u.id,u.name]),filt.owner,'Any owner')}</select>
+<select name="category">${cats(filt.category).replace('<option','<option value="">Any category</option><option')}</select>
+<label class="m">from <input type="date" name="from" value="${esc(filt.from)}"></label><label class="m">to <input type="date" name="to" value="${esc(filt.to)}"></label>
+<button class="p">Search</button><button type="button" data-a="clear">Clear</button></div></form>
+<div class="tw"><table><tr><th>Name</th><th>Owner</th><th>Category</th><th>Created</th><th>Size</th><th>Your access</th><th>Status</th><th></th></tr>
+${list.map(d=>`<tr><td>${esc(d.name)}</td><td>${esc(nm(d.owner))}</td><td>${esc(d.category)}</td><td>${fmt(d.created)}</td><td>${d.size} B</td><td>${esc(d.access)}</td><td>${stat(d.status)}</td><td>${d.status==='rejected'?(d.access==='owner'?`<button class="d" data-a="rmrej" data-id="${d.id}">Remove</button>`:''):`<button data-a="open" data-id="${d.id}">Open</button>`}</td></tr>`).join('')||'<tr><td colspan="8" class="m">No documents available to you.</td></tr>'}</table></div></div>${detail?detailView():''}`}
+
+function detailView(){const m=detail.meta,own=m.access==='owner',can=own||m.access==='edit';
+ const others=Object.values(V.users).filter(u=>u.id!==me&&u.active&&u.approved);
+ return`<div class="card"><div class="row"><h2 style="margin:0">${esc(m.name)}</h2><span class="b">${esc(m.access)}</span>${stat(m.status)}<span class="m">v${m.version} · ${esc(m.category)} · owner ${esc(nm(m.owner))} · ${m.visibility==='everyone'?'public':'private'}${m.modified?' · changed '+fmt(m.modified):''}</span></div>
+${m.status==='pending'?(role()==='admin'?`<div class="row"><span class="m">This upload is waiting for your decision.</span><button class="p" data-a="docok" data-id="${m.id}">Approve upload</button><button class="d" data-a="docno" data-id="${m.id}">Reject upload</button></div>`:'<div class="m">Waiting for administrator approval. Nobody else can see this document yet.</div>'):''}
+<div class="m">Can edit: ${detail.editors.map(u=>esc(nm(u))).join(', ')}</div><div class="row"><button data-a="dl">Download</button>${own?(confirmDel?'<span class="fail">Delete permanently for everyone?</span> <button class="d" data-a="delyes">Yes, delete</button> <button data-a="delno">Cancel</button>':'<button class="d" data-a="del">Delete</button>'):''}<button data-a="close">Close</button></div>
+${can&&detail.text!==null?`<form data-f="edit"><div class="row"><input name="name" value="${esc(m.name)}" size="28"><select name="category">${cats(m.category)}</select></div><textarea name="text">${esc(detail.text)}</textarea><div class="row"><button class="p">Save changes</button></div></form>`:detail.text!==null?`<pre>${esc(detail.text)}</pre>`:'<div class="m">Binary document: use Download.</div>'}
+${own?`<h2>Public or private</h2><form data-f="vis"><div class="row"><select name="vis"><option value="everyone"${m.visibility==='everyone'?' selected':''}>Public: every owner can edit, every viewer can view</option><option value="private"${m.visibility==='private'?' selected':''}>Private: only the people I choose</option></select><button>Update</button></div></form>${m.visibility==='private'?`<div class="tw"><table>${(detail.grants||[]).map(g=>`<tr><td>${esc(nm(g.user))}</td><td>${esc(g.perm)}</td><td><button class="d" data-a="revoke" data-u="${g.user}">Take back</button></td></tr>`).join('')||'<tr><td class="m">Only you.</td></tr>'}</table></div>
+<form data-f="grant"><div class="row">${picker('u',others,'Select people…')}<select name="perm"><option>read</option><option>edit</option></select><button class="p">Grant access</button></div><div class="m">Edit can be given to document owners only. Viewers and owners can be given read access.</div></form>`:'<div class="m">Public: every owner can edit and every viewer can view. Switch to Private to choose people.</div>'}
+<h2>Audit trail of this document</h2>${logTable(detail.audit||[])}`:''}</div>`}
+
+function logTable(rows){return`<div class="tw"><table><tr><th>#</th><th>Time</th><th>Who</th><th>Action</th><th>Document</th><th>Result</th><th>Detail</th></tr>${[...rows].reverse().slice(0,200).map(e=>`<tr><td>${e.seq}</td><td>${fmt(e.ts)}</td><td>${esc(e.actor_name||nm(e.actor)||'unknown')}</td><td>${esc(e.action)}</td><td>${esc(e.doc_name||'')}</td><td>${badge(e.outcome)}</td><td>${esc(e.detail)}</td></tr>`).join('')||'<tr><td class="m">Nothing yet.</td></tr>'}</table></div>`}
+
+function uploadView(){return`<div class="card"><h2 style="margin-top:0">Upload a document</h2><form data-f="upload"><div class="row"><input type="file" name="file"><select name="category">${cats('Other')}</select></div>
+<div class="m">Who can access this document?</div>
+<div class="row"><select name="vis"><option value="everyone">Public: every owner can edit, every viewer can view</option><option value="private">Private: only the people I choose</option></select></div>
+<div id="privopts" hidden><div class="m">Owners who can <b>edit</b> (you always can):</div><div class="row">${picker('ed',Object.values(V.users).filter(u=>u.role==='owner'&&u.approved&&u.active&&u.id!==me),'Select owners who can edit…')}</div>
+<div class="m">Viewers who can <b>view</b>:</div><div class="row">${picker('vw',Object.values(V.users).filter(u=>u.role==='viewer'&&u.approved&&u.active),'Select viewers who can view…')}</div>
+<div class="m">With nobody selected, only you and the administrator can open it.</div></div>
+<div class="m">Or paste text instead of choosing a file:</div><div class="row"><input name="pname" placeholder="notes.txt" size="24"></div><textarea name="ptext" placeholder="Document text"></textarea>
+<div class="row"><button class="p">Upload</button></div><div class="m">Allowed: txt, md, csv, json, pdf, png · max 1 MB · content must match the file type. An administrator must approve each upload before anyone else can see it.</div></form></div>`}
+
+function pendingCard(){const p=Object.values(V.users).filter(u=>!u.approved);return`<div class="card"><h2 style="margin-top:0">Registrations waiting for approval (${p.length})</h2><div class="tw"><table>${p.map(u=>`<tr><td>${esc(u.name)}</td><td>${esc(u.username)}</td><td>${esc(u.role)}</td><td><button class="p" data-a="approve" data-u="${u.id}">Approve</button> <button class="d" data-a="reject" data-u="${u.id}">Reject</button></td></tr>`).join('')||'<tr><td class="m">No one is waiting.</td></tr>'}</table></div></div>`}
+function uploadsCard(){const p=adm.docs.filter(d=>d.status==='pending');return`<div class="card"><h2 style="margin-top:0">Uploads waiting for approval (${p.length})</h2><div class="tw"><table>${p.map(d=>`<tr><td>${esc(d.name)}</td><td>${esc(nm(d.owner))}</td><td>${esc(d.category)}</td><td>${d.size} B</td><td>${fmt(d.created)}</td><td><button data-a="review" data-id="${d.id}">Review</button> <button class="p" data-a="docok" data-id="${d.id}">Approve</button> <button class="d" data-a="docno" data-id="${d.id}">Reject</button></td></tr>`).join('')||'<tr><td class="m">No uploads are waiting.</td></tr>'}</table></div></div>`}
+function adminView(){if(!adm)return'<div class="m">Loading…</div>';const acts=['UPLOAD','UPLOAD_APPROVE','UPLOAD_REJECT','READ','DOWNLOAD','CHANGE','DELETE'],pm=['PERMISSION_GRANT','PERMISSION_REVOKE'];
+ return`${uploadsCard()}${pendingCard()}<div class="card"><h2 style="margin-top:0">Accounts</h2><div class="tw"><table>${Object.values(V.users).filter(u=>u.approved).map(u=>`<tr><td>${esc(u.name)}</td><td>${u.role==='admin'||u.id===me?esc(u.role):`<select data-r="${u.id}"><option value="viewer"${u.role==='viewer'?' selected':''}>Viewer</option><option value="owner"${u.role==='owner'?' selected':''}>Document owner</option></select> <button data-a="role" data-u="${u.id}">Change</button>`}</td><td>${u.active?'active':'deactivated'}</td><td>${u.id===me?'':`<button data-a="active" data-u="${u.id}" data-on="${u.active?0:1}">${u.active?'Deactivate':'Reactivate'}</button>`}</td></tr>`).join('')}</table></div></div>
+<div class="card"><h2 style="margin-top:0">Document register</h2><div class="tw"><table><tr><th>Name</th><th>Owner</th><th>Category</th><th>Status</th><th>Access</th><th>Selected people</th></tr>${adm.docs.map(d=>`<tr><td>${esc(d.name)}</td><td>${esc(nm(d.owner))}</td><td>${esc(d.category)}</td><td>${esc(d.status)}</td><td>${d.visibility==='everyone'?'public':'private'}</td><td>${esc(Object.entries(d.acl).map(([u,p])=>nm(u)+' ('+p+')').join(', ')||'nobody')}</td></tr>`).join('')}</table></div></div>
+<div class="card"><h2 style="margin-top:0">Document activity</h2>${logTable(adm.log.filter(e=>acts.includes(e.action)))}</div>
+<div class="card"><h2 style="margin-top:0">Permission changes</h2>${logTable(adm.log.filter(e=>pm.includes(e.action)))}</div>
+<div class="card"><div class="row"><button data-a="verify">Verify audit chain</button>${chain===null?'':chain===0?'<span class="pass">Intact: no entry has been altered.</span>':`<span class="fail">Entry #${chain} was altered.</span>`}</div><h2>Everything else (logins, refused attempts)</h2>${logTable(adm.log.filter(e=>!acts.includes(e.action)&&!pm.includes(e.action)))}</div>`}
+
+function render(){const tabs=me?TABS[role()]:['login','register'];if(!tabs.includes(tab))tab=tabs[0];
+ let h=`<header><div class="brand"><span class="logo">🔐</span><h1>TrustVault</h1></div><div class="row">${me?`<button data-a="profile" title="My profile">${esc(nm(me))} <span class="b">${esc(role())}</span></button><button data-a="logout">Sign out</button>`:''}</div></header>
+<nav>${tabs.filter(t=>t!=='profile').map(t=>`<button class="${t===tab?'on':''}" data-a="tab" data-t="${t}">${LBL[t]}</button>`).join('')}</nav>`;
+ if(msg&&tab!=='login'&&tab!=='register'&&tab!=='profile')h+=msgBox();
+ h+=({login:loginView,register:registerView,roles:rolesView,docs:()=>me?docsView():'',upload:uploadView,admin:adminView,profile:profileView})[tab]();
+ const app=$('#app'),entering=tab!==lastTab;app.dataset.tab=tab;app.classList.toggle('enter',entering);lastTab=tab;app.innerHTML=h;initReveal(entering);if(msg&&!msg.ok&&(tab==='login'||tab==='register'||tab==='profile')){const c=$('#signin')||$('#app .card');if(c)c.scrollIntoView({block:'center'})}}
+function initReveal(animate){const els=document.querySelectorAll('.rv');
+ if(!animate||!('IntersectionObserver' in window)){els.forEach(e=>e.classList.add('in'));return}
+ const io=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target)}}),{threshold:.12});els.forEach(e=>io.observe(e))}
+
+document.addEventListener('click',e=>{const b=e.target.closest('.eye');if(!b)return;const w=b.parentElement,i=w.querySelector('input'),on=i.type==='password';i.type=on?'text':'password';w.classList.toggle('show',on);b.setAttribute('aria-label',on?'Hide password':'Show password');b.title=on?'Hide password':'Show password';i.focus()});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-pk]');
+ if(!b){document.querySelectorAll('.pk-panel:not([hidden])').forEach(p=>{if(!p.parentElement.contains(e.target))p.hidden=true});return}
+ const w=b.closest('.pick'),pn=w.querySelector('.pk-panel'),k=b.dataset.pk;
+ if(k==='toggle'){document.querySelectorAll('.pk-panel').forEach(p=>{if(p!==pn)p.hidden=true});pn.hidden=!pn.hidden;if(!pn.hidden)w.querySelector('.pk-q').focus()}
+ else{w.querySelectorAll('.pk-i:not([hidden]) input').forEach(i=>i.checked=k==='all');pkLabel(w)}});
+function pkLabel(w){const c=[...w.querySelectorAll('.pk-i input:checked')].map(i=>i.dataset.nm);w.querySelector('.pk-lbl').textContent=c.length?c.length+' selected: '+c.join(', '):w.dataset.ph}
+document.addEventListener('change',e=>{const w=e.target.closest('.pick');if(w&&e.target.matches('.pk-i input'))pkLabel(w)});
+document.addEventListener('input',e=>{if(!e.target.matches('.pk-q'))return;const w=e.target.closest('.pick'),q=e.target.value.trim().toLowerCase();let n=0;
+ w.querySelectorAll('.pk-i').forEach(i=>{const hit=!q||i.dataset.n.includes(q);i.hidden=!hit;if(hit)n++});w.querySelector('.pk-empty').hidden=n>0});
+document.addEventListener('keydown',e=>{if(e.target.matches&&e.target.matches('.pk-q')){if(e.key==='Enter')e.preventDefault();if(e.key==='Escape')e.target.closest('.pk-panel').hidden=true}});
+document.addEventListener('input',e=>{if(e.target.classList)e.target.classList.remove('bad')});
+document.addEventListener('change',e=>{if(e.target.matches&&e.target.matches('select[name="vis"]')){const b=document.getElementById('privopts');if(b)b.hidden=e.target.value!=='private'}});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b||busy)return;const a=b.dataset.a,id=b.dataset.id;
+ act(async()=>{switch(a){
+  case'tab':tab=b.dataset.t;chain=null;keep={};bad=new Set();msg=null;confirmAcct=false;if(tab!=='docs'){sel=null;detail=null}break;
+  case'logout':me=null;await sb.auth.signOut();V.users={};sel=null;detail=null;adm=null;docs=[];tab='login';keep={};bad=new Set();break;
+  case'clear':filt={};break;
+  case'open':confirmDel=false;await openDoc(id);break;
+  case'close':confirmDel=false;sel=null;detail=null;break;
+  case'profile':{const g=await sb.auth.getUser();myEmail=g.data&&g.data.user?g.data.user.email:'';tab='profile';sel=null;detail=null;keep={};bad=new Set();confirmAcct=false;break}
+  case'delacct':confirmAcct=true;keep={};bad=new Set();break;
+  case'delacctno':confirmAcct=false;keep={};bad=new Set();break;
+  case'review':confirmDel=false;tab='docs';await openDoc(id);break;
+  case'docok':await V.docApprove(id);note('Upload approved; it is now available',true);break;
+  case'docno':await V.docReject(id);if(sel===id){sel=null;detail=null}note('Upload rejected and its file removed',true);break;
+  case'rmrej':await V.remove(id);note('Rejected upload removed from your list',true);break;
+  case'dl':{const f=await V.download(sel);const url=URL.createObjectURL(new Blob([f.bytes]));const l=document.createElement('a');l.href=url;l.download=f.name;document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);note('Downloaded. The download is recorded in the audit trail.',true);break}
+  case'del':confirmDel=true;break;
+  case'delno':confirmDel=false;break;
+  case'delyes':confirmDel=false;await V.remove(sel);sel=null;detail=null;note('Document deleted',true);break;
+  case'revoke':await V.revoke(sel,b.dataset.u);note('Access taken back; effective immediately',true);break;
+  case'active':await V.setActive(b.dataset.u,b.dataset.on==='1');break;
+  case'role':{const r=document.querySelector('select[data-r="'+b.dataset.u+'"]');await V.setRole(b.dataset.u,r.value);note('Role updated',true);break}
+  case'approve':await V.approve(b.dataset.u);note('Account approved; they can sign in now',true);break;
+  case'reject':await V.reject(b.dataset.u);note('Registration rejected and removed',true);break;
+  case'verify':chain=await V.verifyChain();break;
+  }})});
+
+document.addEventListener('submit',e=>{const f=e.target.closest('[data-f]');if(!f)return;e.preventDefault();if(busy)return;const d=new FormData(f);
+ act(async()=>{if(!sb)throw new Invalid('Supabase is not configured yet (see the top of this file)');switch(f.dataset.f){
+  case'login':{keep=Object.fromEntries(d.entries());bad=new Set();const u=String(d.get('u')).trim(),pw=String(d.get('p'));
+   const fail=(m,f)=>{bad=new Set(f);const x=new Invalid(m);x.title='Sign-in failed';return x};
+   if(!u||!/^\S+@\S+\.\S+$/.test(u))throw fail(u?'Enter a valid email address':'Enter your email',['u']);
+   if(!pw)throw fail('Enter your password',['p']);
+   try{const p=await V.login(u,pw);me=p.id;keep={};bad=new Set();await V.refreshUsers();tab=role()==='admin'?'admin':'docs'}catch(e){bad=new Set(e.badFields||[]);e.title=e.title||'Sign-in failed';throw e}break}
+  case'register':{keep=Object.fromEntries(d.entries());bad=new Set();
+   try{if(d.get('p')!==d.get('p2'))throw new Invalid('The two passwords do not match');await V.register(d.get('email'),d.get('u'),d.get('name'),d.get('role'),d.get('p'))}
+   catch(e){const m=String(e.message).toLowerCase();bad=new Set(/do not match/.test(m)?['p','p2']:/username/.test(m)?['u']:/full name/.test(m)?['name']:/password/.test(m)?['p']:/email|already registered/.test(m)?['email']:[]);throw e}
+   keep={};bad=new Set();note('Account created. Confirm your email if you are asked to, then an administrator must approve it before you can sign in.',true);tab='login';break}
+  case'prof':{keep=Object.fromEntries(d.entries());bad=new Set();const nn=String(d.get('pn')||'').trim(),nu=String(d.get('pu')||'').trim().toLowerCase();
+   if(nn.length<2||nn.length>60){bad=new Set(['pn']);throw new Invalid('Enter your full name (2-60 characters)')}
+   if(!/^[a-z0-9_.-]{3,30}$/.test(nu)){bad=new Set(['pu']);throw new Invalid('Username: 3-30 characters, using letters, digits, dot, dash or underscore')}
+   try{await rpc('tv_update_profile',{p_name:nn,p_username:nu})}catch(e){bad=new Set(/username/i.test(e.message)?['pu']:/name/i.test(e.message)?['pn']:[]);throw e}
+   await V.refreshUsers();keep={};bad=new Set();note('Profile updated',true);break}
+  case'chpw':{keep=Object.fromEntries(d.entries());bad=new Set();const cp=String(d.get('cp')||''),np=String(d.get('np')||''),np2=String(d.get('np2')||'');
+   if(!cp){bad=new Set(['cp']);throw new Invalid('Enter your current password')}
+   if(np.length<8||!/[a-zA-Z]/.test(np)||!/\d/.test(np)){bad=new Set(['np']);throw new Invalid('New password: at least 8 characters, with a letter and a digit')}
+   if(np!==np2){bad=new Set(['np','np2']);throw new Invalid('The two new passwords do not match')}
+   const{error:e1}=await sb.auth.signInWithPassword({email:myEmail,password:cp});
+   if(e1){bad=new Set(['cp']);throw new Denied('Current password is incorrect')}
+   const{error:e2}=await sb.auth.updateUser({password:np});
+   if(e2){bad=new Set(['np']);throw new Invalid(e2.message)}
+   keep={};bad=new Set();note('Password changed. Use the new password next time you sign in.',true);break}
+  case'delacct':{keep=Object.fromEntries(d.entries());bad=new Set();const pw=String(d.get('dp')||'');
+   if(!pw){bad=new Set(['dp']);throw new Invalid('Enter your password to confirm')}
+   const{error:e1}=await sb.auth.signInWithPassword({email:myEmail,password:pw});
+   if(e1){bad=new Set(['dp']);throw new Denied('Password is incorrect')}
+   const r=await rpc('tv_delete_account');await V.purge(r.paths||[]);
+   me=null;V.users={};sel=null;detail=null;adm=null;docs=[];keep={};bad=new Set();confirmAcct=false;myEmail='';
+   await sb.auth.signOut({scope:'local'}).catch(()=>{});tab='login';note('Your account has been deleted. Those details can no longer be used to sign in.',true);break}
+  case'search':filt={q:d.get('q'),owner:d.get('owner'),category:d.get('category'),from:d.get('from'),to:d.get('to')};break;
+  case'edit':await V.edit(me,sel,{name:d.get('name'),category:d.get('category'),text:d.get('text'),oldText:detail.text});detail.text=d.get('text');note('Saved',true);break;
+  case'vis':await V.setVisibility(sel,d.get('vis'));note('Visibility updated',true);break;
+  case'grant':{const us=d.getAll('u');if(!us.length)throw new Invalid('Choose at least one person');for(const u of us)await V.grant(sel,u,d.get('perm'));note('Access granted to '+us.length+' '+(us.length>1?'people':'person'),true);break}
+  case'upload':{const file=d.get('file');let name,bytes;if(file&&file.size){name=file.name;bytes=new Uint8Array(await file.arrayBuffer())}else{name=String(d.get('pname')||'').trim();bytes=enc.encode(String(d.get('ptext')||''))}
+   const prv=d.get('vis')==='private',ed=prv?d.getAll('ed'):[],up=await V.upload(me,name,bytes,d.get('category'),d.get('vis'),ed);
+   if(prv)for(const u of d.getAll('vw'))if(!ed.includes(u))await V.grant(up.id,u,'read');note('Uploaded “'+name+'”. It is waiting for administrator approval.',true);tab='docs';break}}})});
+
+document.addEventListener('mousemove',e=>{const r=document.documentElement.style;r.setProperty('--px',((e.clientX/innerWidth-.5)*2).toFixed(2));r.setProperty('--py',((e.clientY/innerHeight-.5)*2).toFixed(2));const c=e.target.closest&&e.target.closest('.card');if(c){const b=c.getBoundingClientRect();c.style.setProperty('--x',(e.clientX-b.left)+'px');c.style.setProperty('--y',(e.clientY-b.top)+'px')}},{passive:true});
+
+(async()=>{
+ if(sb){
+  sb.auth.onAuthStateChange(ev=>{if(ev==='SIGNED_OUT'&&me){me=null;V.users={};sel=null;detail=null;tab='login';msg={t:'Signed out',m:'Your session ended. Please sign in again.'};render()}});
+  try{const{data}=await sb.auth.getSession();
+   if(data.session){const p=await rpc('tv_me');me=p.id;await V.refreshUsers();tab=role()==='admin'?'admin':'docs';await load()}}
+  catch(e){me=null;try{await sb.auth.signOut()}catch{}}
+ }
+ if(!me)tab='login';
+ render()})();
+</script>
+</body>
+</html>
